@@ -10,10 +10,14 @@ import org.nlogo.core.LogoList;
 import org.nlogo.core.Syntax;
 import org.nlogo.core.SyntaxJ;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The reporter which receives two LogoList:
@@ -24,9 +28,11 @@ import java.util.Set;
  */
 public class NeighboursReporter implements Reporter {
 
+    private static Logger logger = Logger.getLogger("NeighboursReporter");
+
     @Override
     public Syntax getSyntax() {
-        return SyntaxJ.reporterSyntax(Syntax.NumberType());
+        return SyntaxJ.reporterSyntax(new int[] {Syntax.ListType(), Syntax.ListType()}, Syntax.NumberType());
     }
 
     @Override
@@ -38,12 +44,24 @@ public class NeighboursReporter implements Reporter {
         List<Vector2D> pointSet = new ArrayList<>();
         Set<Vector2D> neighboursSet = new HashSet<>();
 
+        logger.setLevel(Level.INFO);
+        FileHandler handler = null;
+        try {
+            handler = new FileHandler("C:\\Users\\Yuche\\Documents\\Silver_Data\\UAV\\Patent\\Code\\UAV\\log\\UAV.log");
+        } catch (IOException ioe) {
+            System.out.println("err...");
+        }
+        logger.addHandler(handler);
+        logger.info("Reporter Init...");
+
         try {
             allCorList = args[1].getList();
             singleCorList = args[0].getList();
         } catch (ExtensionException ee) {
             System.out.println(ee.getMessage());
         }
+
+        logger.info("allCorList size="+allCorList.size()+"/n"+"singleCorList size="+singleCorList.size());
 
         for (int i = 0; i < allCorList.length(); i++) {
             LogoList corList = (LogoList) allCorList.get(i);
